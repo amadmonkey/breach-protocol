@@ -1,0 +1,41 @@
+.time-limit {
+	width: 600px;
+	box-sizing: border-box;
+	padding: 5px 0;
+	header {
+		color: darken(#d2ed60, 40%);
+		font-size: 5.4px;
+		border-bottom: 1px solid darken(#d2ed60, 40%);
+	}
+	.content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 30px;
+		padding: 10px 0;
+		.timer {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 50px;
+			width: 100px;
+			background-color: #2a2822;
+			border: 1px solid var(--primary);
+		}
+	}
+	.progress-bar {
+		position: relative;
+		height: 10px;
+		width: 100%;
+		border: 1px solid var(--primary);
+		&::before {
+			content: "";
+			position: absolute;
+			background-color: var(--primary);
+			height: 100%;
+			width: 50%;
+			top: 0;
+			left: 0;
+		}
+	}
+}

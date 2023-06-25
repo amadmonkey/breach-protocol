@@ -1,0 +1,34 @@
+.buffer-container {
+	display: grid;
+	padding: 10px 0;
+	.buffer-display {
+		display: flex;
+		gap: 10px;
+		padding: 18.7px;
+		background-color: var(--bg);
+		border: 2px solid var(--primary);
+		li {
+			display: grid;
+			align-items: center;
+			&.__matched {
+				span {
+					border: 2px solid var(--focused);
+					box-shadow: 0 0 7px var(--focused);
+					color: var(--focused);
+					@supports not (-moz-appearance: none) {
+						animation: glow 1s infinite;
+					}
+				}
+			}
+		}
+		span {
+			display: inline-grid;
+			height: 35px;
+			width: 35px;
+			border: 2px dashed var(--primary-dark);
+			font-size: 30px;
+			align-items: center;
+			justify-items: center;
+		}
+	}
+}
