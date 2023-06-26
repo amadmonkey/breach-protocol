@@ -14,6 +14,9 @@ class Buffer {
             console.error('no buffer selected');
         }
     }
+    setList (list) {
+        this.list = list;
+    }
     isFull = () => this.getLength() >= this.maxBuffer;
     getLength = () => this.list.length;
     getByProperty = (property) => this.list.map(tile => tile[property])

@@ -15,12 +15,12 @@
 		width: 60px;
 		display: grid;
 		align-items: center;
-		padding: 3px 5px;
 		box-sizing: border-box;
 		button {
 			position: relative;
 			height: 100%;
 			width: 100%;
+			padding: 3px 5px;
 			background: none;
 			border: none;
 			font-size: 28px;
@@ -44,65 +44,62 @@
 			}
 			&:focus-visible,
 			&:hover {
-				box-shadow: 0 0 7px var(--focused);
+				box-shadow: 0 0 7px var(--focused_dark);
 				@supports not (-moz-appearance: none) {
 					animation: glow 1s infinite;
 				}
 				button {
+					position: relative;
 					color: var(--focused);
 					cursor: pointer;
-					border: 1px solid var(--focused);
-					box-shadow: 0 0 7px var(--focused);
+					border: 2px solid var(--focused);
+					box-shadow: 0 0 7px var(--focused_dark);
 					@supports not (-moz-appearance: none) {
 						animation: glow 1s infinite;
 					}
-				}
-				&::after {
-					content: "";
-					position: absolute;
-					height: 100%;
-					width: 100%;
-					top: -1px;
-					left: -1px;
-					background: transparent;
-					border: 1px solid var(--focused);
+					&::after {
+						content: "";
+						position: absolute;
+						height: calc(100% - 8px);
+						width: calc(100% - 10px);
+						top: 3px;
+						left: 4px;
+						background: transparent;
+						border: 1px solid var(--focused);
+						box-shadow: 0 0 7px var(--focused_dark);
+					}
 				}
 			}
 		}
 		&.__highlighted {
-			&.__first {
+			&::before {
+				content: "";
+				position: absolute;
+				display: block;
+				height: inherit;
+				width: inherit;
+				left: 0;
+				background-color: var(--highlighted) !important;
+				pointer-events: none;
+				z-index: -1;
+			}
+			&.__x {
 				&::before {
-					content: "";
-					position: absolute;
-					display: block;
-					height: inherit;
-					width: inherit;
-					left: 0;
-					background-color: var(--highlighted) !important;
-					pointer-events: none;
-					z-index: -1;
+					transform-origin: center;
+					transform: scaleX(2000%);
 				}
 			}
-			&.__first {
-				&.__x {
-					&::before {
-						transform-origin: center;
-						transform: scaleX(2000%);
-					}
-				}
-				&.__y {
-					&::before {
-						transform-origin: center;
-						transform: scaleY(2000%);
-					}
+			&.__y {
+				&::before {
+					transform-origin: center;
+					transform: scaleY(2000%);
 				}
 			}
 		}
-		&.__next {
+		&:hover {
 			background-color: transparent;
-			&.__first,
-			&.__last {
-				&::before {
+			&:not(.__disabled) {
+				&::after {
 					content: "";
 					position: absolute;
 					display: block;
@@ -113,16 +110,14 @@
 					pointer-events: none;
 					z-index: -2;
 				}
-			}
-			&.__first {
 				&.__x {
-					&::before {
+					&::after {
 						transform-origin: center;
 						transform: scaleY(2000%);
 					}
 				}
 				&.__y {
-					&::before {
+					&::after {
 						transform-origin: center;
 						transform: scaleX(2000%);
 					}

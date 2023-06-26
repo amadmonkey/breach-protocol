@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { _STATUS_CLASSES } from "../../global.js";
+import React, { useMemo } from "react";
+import {
+	addToArray,
+	isArrayEquals,
+	removeFromArray,
+	_AXES,
+	_STATUS_CLASSES,
+} from "../../global.js";
 
 import SequenceLogo from "../../assets/img/board/sequence-logo.png";
 import ft4 from "../../assets/img/board/etc-ft-4.png";
@@ -8,12 +14,32 @@ import Container from "../Container/Container";
 import "./Sequences.scss";
 
 const Sequences = ({ buffer, focusedOrigin, sequences }) => {
-	const [withClasses, setWithClasses] = useState(sequences);
+	const bufferContent = buffer.getByProperty("content");
+	const bufferLength = bufferContent.length;
 
-	useEffect(() => {
-		// console.log(sequences);
-		// setWithClasses(sequences);
-	}, [focusedOrigin]);
+	useMemo(() => {
+		if (focusedOrigin) {
+			if (!buffer.isFull()) {
+				const bufferArray = [...buffer.list.map((tile) => tile.content), focusedOrigin.content];
+				sequences.map((sequence, i) => {
+					sequence.map((tile) => removeFromArray(tile.sequenceClassName, _STATUS_CLASSES.focused));
+
+					const sequenceArray = sequence.slice(0, bufferLength + 1);
+					const isSameBuffer = isArrayEquals(
+						sequenceArray.map((tile) => tile.content),
+						bufferArray
+					);
+					sequence.map((tile, i) => {
+						i < bufferLength &&
+							tile.content === bufferArray[i] &&
+							addToArray(tile.sequenceClassName, _STATUS_CLASSES.matched);
+					});
+					isSameBuffer &&
+						addToArray(sequence[bufferLength].sequenceClassName, _STATUS_CLASSES.focused);
+				});
+			}
+		}
+	}, [buffer, focusedOrigin]);
 
 	return (
 		<Container
@@ -28,7 +54,10 @@ const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 										<li
 											key={`sequence-${tile.id}`}
 											id={`sequence-${tile.id}`}
-											className={buffer.getLength() === i ? _STATUS_CLASSES.highlighted : ""}
+											className={[
+												bufferLength === i ? _STATUS_CLASSES.highlighted : "",
+												...tile.sequenceClassName,
+											].join(" ")}
 										>
 											<span>{tile.content}</span>
 										</li>
