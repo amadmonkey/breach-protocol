@@ -29,10 +29,14 @@
 			button {
 				display: grid;
 				align-content: center;
-				font-size: 30px;
+				font-size: 35px;
 				color: #5b476d;
 				grid-template-columns: repeat(2, 1fr);
 				gap: 5px;
+				> * {
+					position: relative;
+					top: -2px;
+				}
 			}
 		}
 		&:not(.__disabled) {

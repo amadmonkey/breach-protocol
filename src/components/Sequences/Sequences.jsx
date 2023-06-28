@@ -1,11 +1,5 @@
 import React, { useMemo } from "react";
-import {
-	addToArray,
-	isArrayEquals,
-	removeFromArray,
-	_AXES,
-	_STATUS_CLASSES,
-} from "../../global.js";
+import { addToArray, _STATUS_CLASSES } from "../../global.js";
 
 import SequenceLogo from "../../assets/img/board/sequence-logo.png";
 import ft4 from "../../assets/img/board/etc-ft-4.png";
@@ -14,32 +8,33 @@ import Container from "../Container/Container";
 import "./Sequences.scss";
 
 const Sequences = ({ buffer, focusedOrigin, sequences }) => {
-	const bufferContent = buffer.getByProperty("content");
-	const bufferLength = bufferContent.length;
-
 	useMemo(() => {
 		if (focusedOrigin) {
 			if (!buffer.isFull()) {
-				const bufferArray = [...buffer.list.map((tile) => tile.content), focusedOrigin.content];
-				sequences.map((sequence, i) => {
-					sequence.map((tile) => removeFromArray(tile.sequenceClassName, _STATUS_CLASSES.focused));
+				const bufferWithFocused = [
+					...buffer.list.map((tile) => tile.content),
+					focusedOrigin.content,
+				];
 
-					const sequenceArray = sequence.slice(0, bufferLength + 1);
-					const isSameBuffer = isArrayEquals(
-						sequenceArray.map((tile) => tile.content),
-						bufferArray
-					);
-					sequence.map((tile, i) => {
-						i < bufferLength &&
-							tile.content === bufferArray[i] &&
-							addToArray(tile.sequenceClassName, _STATUS_CLASSES.matched);
-					});
-					isSameBuffer &&
-						addToArray(sequence[bufferLength].sequenceClassName, _STATUS_CLASSES.focused);
+				sequences.map((sequence) => {
+					sequence;
+					sequence.clean(_STATUS_CLASSES.focused);
+					const { list, paddingCount } = sequence;
+					const isValid = bufferWithFocused
+						.slice(paddingCount)
+						.every((obj, i) => obj === list[i]?.content);
+					if (isValid) {
+						addToArray(
+							list[buffer.list.length - paddingCount]?.sequenceClassName,
+							_STATUS_CLASSES.focused
+						);
+					}
 				});
 			}
 		}
 	}, [buffer, focusedOrigin]);
+
+	useMemo(() => sequences.map((sequence) => sequence.update(buffer)), [buffer]);
 
 	return (
 		<Container
@@ -47,22 +42,46 @@ const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 			content={
 				<div className="sequences-container">
 					{sequences.map((sequence, i) => {
+						const { list, className, isDone, paddingCount } = sequence;
 						return (
 							<ul className="sequence" key={i}>
-								{sequence.map((tile, i) => {
-									return (
-										<li
-											key={`sequence-${tile.id}`}
-											id={`sequence-${tile.id}`}
-											className={[
-												bufferLength === i ? _STATUS_CLASSES.highlighted : "",
-												...tile.sequenceClassName,
-											].join(" ")}
-										>
-											<span>{tile.content}</span>
+								{(() => {
+									const tiles = [];
+									tiles.push(
+										<li key={`sequence-done-${i}`} className={`sequence-done ${className}`}>
+											<span>
+												{className.includes(_STATUS_CLASSES.success) ? "INSTALLED" : "FAILED"}
+											</span>
 										</li>
 									);
-								})}
+									for (let x = 0; x < paddingCount; x++) {
+										tiles.push(
+											<li key={`padding-${x}${i}`}>
+												<span>&nbsp;</span>
+											</li>
+										);
+									}
+									list.map((tile, i) => {
+										const { id, sequenceClassName, content } = tile;
+										tiles.push(
+											<li
+												key={`sequence-${id}${i}`}
+												className={
+													i === buffer.list.length - paddingCount ? _STATUS_CLASSES.highlighted : ""
+												}
+											>
+												<span
+													key={`sequence-${id}${i}`}
+													className={[...sequenceClassName].join(" ")}
+												>
+													{content}
+												</span>
+											</li>
+										);
+									});
+									// }
+									return tiles;
+								})()}
 							</ul>
 						);
 					})}

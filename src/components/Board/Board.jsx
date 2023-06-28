@@ -32,14 +32,14 @@ const Board = ({ tiles, buffer, boardSize, updateBuffer, setFocusedOrigin }) => 
 	const handleAddBuffer = (newBuffer) => {
 		if (!buffer.isFull()) {
 			const newAxis = { active: axis.inactive, inactive: axis.active };
-			newBuffer.disabled = true;
+			newBuffer.status = false;
 			tiles.map((tile) => {
 				cleanTile(tile);
 				if (isTileValid(newBuffer.position, tile, newAxis)) {
 					removeClass(tile, _STATUS_CLASSES.disabled);
 					addClass(tile, [_STATUS_CLASSES.highlighted, _STATUS_CLASSES[axis.inactive]]);
 				}
-				tile.disabled && addClass(tile, [_STATUS_CLASSES.selected, _STATUS_CLASSES.disabled]);
+				!tile.status && addClass(tile, [_STATUS_CLASSES.selected, _STATUS_CLASSES.disabled]);
 			});
 			setAxis(newAxis);
 			buffer.add(newBuffer);
@@ -54,7 +54,7 @@ const Board = ({ tiles, buffer, boardSize, updateBuffer, setFocusedOrigin }) => 
 				<div className="board-container">
 					<ul
 						className="board"
-						style={{ gridTemplateColumns: `repeat(${boardSize}, 1fr)` }}
+						style={{ gridTemplateColumns: `repeat(${buffer.boardSize}, 1fr)` }}
 						onMouseLeave={() => updateFocusedOrigin(null)}
 					>
 						{tiles.map((tile) => {
@@ -62,14 +62,13 @@ const Board = ({ tiles, buffer, boardSize, updateBuffer, setFocusedOrigin }) => 
 							return (
 								<li
 									key={tile.id}
-									id={tile.id}
 									className={tile.className.join(" ")}
-									onMouseEnter={() => isValid && updateFocusedOrigin(tile)}
+									onMouseEnter={() => updateFocusedOrigin(isValid ? tile : null)}
 									onFocus={() => isValid && updateFocusedOrigin(tile)}
 									onClick={() => isValid && handleAddBuffer(tile)}
 								>
 									<button>
-										{tile.disabled ? (
+										{!tile.status ? (
 											<>
 												<span>[</span>
 												<span>]</span>

@@ -1,86 +1,108 @@
 .sequences-container {
 	display: flex;
 	flex-direction: column;
-	gap: 15px;
 	width: 100%;
-	padding: 10px 20px;
 	margin-bottom: 50px;
 	box-sizing: border-box;
+	padding: 5px 15px;
 	.sequence {
+		position: relative;
 		display: flex;
-		gap: 10px;
+		gap: 8px;
+		height: 70px;
 		li {
 			position: relative;
 			display: grid;
 			align-items: center;
-			padding: 3px;
+			height: 40px;
 			box-sizing: border-box;
-			border: 2px solid transparent;
 			color: var(--white);
-			&.__focused {
-				border-color: var(--focused);
-				box-shadow: 0 0 7px var(--focused);
-				color: var(--focused);
-				@supports not (-moz-appearance: none) {
-					animation: glow 1s infinite;
+			z-index: -1;
+			span {
+				display: inline-grid;
+				height: 40px;
+				width: 40px;
+				font-size: 27px;
+				align-items: center;
+				justify-items: center;
+				padding: 3px;
+				box-sizing: border-box;
+				border: 2px solid transparent;
+				&.__focused {
+					box-shadow: 0 0 7px var(--focused);
+					box-sizing: border-box;
+					color: var(--focused);
+					border: 2px solid var(--focused);
+					@supports not (-moz-appearance: none) {
+						animation: glow 1s infinite;
+					}
+				}
+				&.__matched {
+					border-color: var(--primary);
+					color: var(--primary);
 				}
 			}
-			&.__matched {
-				border-color: var(--primary);
-				color: var(--primary);
-			}
-
 			&.__highlighted {
 				&::before {
 					content: "";
 					position: absolute;
 					left: 0;
 					top: 0;
-					height: 55px;
+					height: 70px;
 					width: 100%;
 					background-color: #201e33;
 					z-index: -1;
 				}
 			}
 		}
-		span {
-			display: inline-grid;
-			height: 30px;
-			width: 30px;
-			font-size: 27px;
-			align-items: center;
-			justify-items: center;
+		.sequence-done {
+			display: grid;
+			align-items: start;
+			position: absolute;
+			height: 100%;
+			width: 0%;
+			color: var(--bg);
+			top: 0;
+			left: 0;
+			z-index: 1;
+			transition: width 0.2s;
+			pointer-events: none;
+			overflow: hidden;
+			border-top: 1px solid var(--bg);
+			span {
+				font-size: 21px;
+				padding-left: 20px;
+				padding-top: 5px;
+			}
+			&.success,
+			&.failed {
+				width: 100%;
+				&::before {
+					border-top-color: var(--danger);
+					border-left-color: var(--danger);
+				}
+			}
+			&.success {
+				background-color: var(--success);
+				&::before {
+					border-top-color: var(--success);
+					border-left-color: var(--success);
+				}
+			}
+			&.failed {
+				background-color: var(--danger);
+			}
+			&::before {
+				content: "";
+				position: absolute;
+				height: 0;
+				width: 0;
+				right: 0;
+				bottom: 0;
+				background-color: var(--bg);
+				border: 10px solid var(--bg);
+			}
 		}
-		// li {
-		// 	display: grid;
-		// 	justify-content: center;
-		// 	height: 60px;
-		// 	width: 35px;
-		// 	color: var(--white);
-		// 	text-align: center;
-		// 	span {
-		// 		display: grid;
-		// 		align-content: center;
-		// 		height: 30px;
-		// 		width: inherit;
-		// 		box-sizing: border-box;
-		// 	}
-		// 	&.__highlighted {
-		// 		background-color: #201e33;
-		// 	}
-		// 	&.__focused {
-		// 		span {
-		// 			border: 1px solid var(--focused);
-		// 			box-shadow: 0 0 7px var(--focused);
-		// 			@supports not (-moz-appearance: none) {
-		// 				animation: glow 1s infinite;
-		// 			}
-		// 		}
-		// 	}
-		// 	&.__matched {
-		// 		color: var(--primary);
-		// 	}
-		// }
 	}
 }
 .sequences-container__footer {
