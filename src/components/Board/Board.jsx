@@ -1,12 +1,7 @@
-import React, { useState } from "react";
-import {
-	addToArray,
-	isTileValid,
-	removeFromArray,
-	_AXES,
-	_CODES,
-	_STATUS_CLASSES,
-} from "../../global.js";
+import React, { useEffect, useState } from "react";
+import { _AXES, _CODES, _STATUS_CLASSES } from "../../global.js";
+
+import Axis from "../../axis.js";
 
 import Container from "../Container/Container.jsx";
 import codeMatrixLogo from "../../assets/img/board/code-matrix-logo.png";
@@ -17,35 +12,28 @@ import ft4 from "../../assets/img/board/etc-ft-4.png";
 
 import "./Board.scss";
 
-const Board = ({ tiles, buffer, boardSize, updateBuffer, setFocusedOrigin }) => {
-	const [axis, setAxis] = useState({ active: _AXES.X, inactive: _AXES.Y });
+const Board = ({ tiles, buffer, boardSize, startTimer, setFocusedOrigin }) => {
+	const [axis, setAxis] = useState(new Axis({}));
 
-	const updateFocusedOrigin = (focusedTile) => setFocusedOrigin(focusedTile);
-	const addClass = (tile, classesToAdd) => addToArray(tile.className, classesToAdd);
-	const removeClass = (tile, classesToRemove) => removeFromArray(tile.className, classesToRemove);
+	const addBuffer = (newTile) => {
+		if (newTile.isValid(buffer, axis)) {
+			newTile.status = false;
+			buffer.add(newTile);
+			axis.toggle();
 
-	const cleanTile = (tile) => {
-		removeClass(tile, Object.values(_STATUS_CLASSES));
-		addClass(tile, _STATUS_CLASSES.disabled);
-	};
-
-	const handleAddBuffer = (newBuffer) => {
-		if (!buffer.isFull()) {
-			const newAxis = { active: axis.inactive, inactive: axis.active };
-			newBuffer.status = false;
-			tiles.map((tile) => {
-				cleanTile(tile);
-				if (isTileValid(newBuffer.position, tile, newAxis)) {
-					removeClass(tile, _STATUS_CLASSES.disabled);
-					addClass(tile, [_STATUS_CLASSES.highlighted, _STATUS_CLASSES[axis.inactive]]);
-				}
-				!tile.status && addClass(tile, [_STATUS_CLASSES.selected, _STATUS_CLASSES.disabled]);
-			});
-			setAxis(newAxis);
-			buffer.add(newBuffer);
-			updateBuffer(buffer);
+			// set new valid tiles
+			tiles.map((tile) => tile.setActive(buffer, axis));
+			buffer.getLength() === 1 && startTimer();
+			setFocusedOrigin(null);
+		} else {
+			newTile.clean(_STATUS_CLASSES.focused);
 		}
 	};
+
+	const updateFocusedOrigin = (focusedTile) =>
+		setFocusedOrigin(focusedTile?.isValid(buffer, axis) ? focusedTile : null);
+
+	useEffect(() => setAxis(new Axis({})), [buffer]);
 
 	return (
 		<Container
@@ -54,18 +42,18 @@ const Board = ({ tiles, buffer, boardSize, updateBuffer, setFocusedOrigin }) => 
 				<div className="board-container">
 					<ul
 						className="board"
-						style={{ gridTemplateColumns: `repeat(${buffer.boardSize}, 1fr)` }}
+						style={{ gridTemplateColumns: `repeat(${boardSize}, 1fr)` }}
 						onMouseLeave={() => updateFocusedOrigin(null)}
 					>
 						{tiles.map((tile) => {
-							const isValid = isTileValid(buffer.getLastPosition(), tile, axis);
 							return (
 								<li
 									key={tile.id}
-									className={tile.className.join(" ")}
-									onMouseEnter={() => updateFocusedOrigin(isValid ? tile : null)}
-									onFocus={() => isValid && updateFocusedOrigin(tile)}
-									onClick={() => isValid && handleAddBuffer(tile)}
+									className={tile.className.board.join(" ")}
+									onMouseEnter={() => updateFocusedOrigin(tile)}
+									onMouseLeave={() => updateFocusedOrigin(null)}
+									onFocus={() => updateFocusedOrigin(tile)}
+									onClick={() => addBuffer(tile)}
 								>
 									<button>
 										{!tile.status ? (

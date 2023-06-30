@@ -55,13 +55,13 @@
 
 @keyframes glow {
 	0% {
-		box-shadow: 0 0 7px var(--focused);
+		box-shadow: 0 0 10px var(--focused);
 	}
 	50% {
-		box-shadow: 0 0 14px var(--focused);
+		box-shadow: 0 0 15px var(--focused);
 	}
 	100% {
-		box-shadow: 0 0 7px var(--focused);
+		box-shadow: 0 0 10px var(--focused);
 	}
 }
 

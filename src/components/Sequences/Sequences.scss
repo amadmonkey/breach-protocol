@@ -4,11 +4,11 @@
 	width: 100%;
 	margin-bottom: 50px;
 	box-sizing: border-box;
-	padding: 5px 15px;
+	padding: 7px 19px;
 	.sequence {
 		position: relative;
 		display: flex;
-		gap: 8px;
+		gap: 10px;
 		height: 70px;
 		li {
 			position: relative;
@@ -29,13 +29,10 @@
 				box-sizing: border-box;
 				border: 2px solid transparent;
 				&.__focused {
-					box-shadow: 0 0 7px var(--focused);
+					box-shadow: 0 0 10px var(--focused);
 					box-sizing: border-box;
 					color: var(--focused);
 					border: 2px solid var(--focused);
-					@supports not (-moz-appearance: none) {
-						animation: glow 1s infinite;
-					}
 				}
 				&.__matched {
 					border-color: var(--primary);
@@ -48,7 +45,7 @@
 					position: absolute;
 					left: 0;
 					top: 0;
-					height: 70px;
+					height: 90px;
 					width: 100%;
 					background-color: #201e33;
 					z-index: -1;
@@ -59,16 +56,15 @@
 			display: grid;
 			align-items: start;
 			position: absolute;
-			height: 100%;
-			width: 0%;
+			height: 0;
+			width: 100%;
 			color: var(--bg);
 			top: 0;
 			left: 0;
 			z-index: 1;
-			transition: width 0.2s;
+			transition: height 150ms;
 			pointer-events: none;
 			overflow: hidden;
-			border-top: 1px solid var(--bg);
 			span {
 				font-size: 21px;
 				padding-left: 20px;
@@ -76,7 +72,8 @@
 			}
 			&.success,
 			&.failed {
-				width: 100%;
+				border-top: 1px solid var(--bg);
+				height: 100%;
 				&::before {
 					border-top-color: var(--danger);
 					border-left-color: var(--danger);

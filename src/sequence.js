@@ -7,40 +7,43 @@ class Sequence {
 		this.isDone = false;
 		this.className = [];
 	}
-	clean(classList = null) {
-		classList && this.list.map((tile) => removeFromArray(tile.sequenceClassName, classList));
-	}
+	clean = (classList) =>
+		classList && this.list.map((tile) => removeFromArray(tile.className.sequence, classList));
+
 	update(buffer = null) {
 		if (!this.isDone) {
-			const { list, maxBuffer } = buffer;
+			const { list, maxLength } = buffer;
 			const bufferLength = list.length;
 			let matchedCount = 0;
+
 			// check for matched
 			this.list.map((tile, i) => {
-				const { content, sequenceClassName } = tile;
+				const { content, className } = tile;
 				if (content === list.slice(this.paddingCount)[i]?.content) {
-					addToArray(sequenceClassName, _STATUS_CLASSES.matched);
+					addToArray(className.sequence, _STATUS_CLASSES.matched);
 					matchedCount++;
 				}
-				// add bg to current column
-				// debugger;
-				// bufferLength - this.paddingCount === i &&
-				// 	addToArray(sequenceClassName, _STATUS_CLASSES.highlighted);
 			});
+
 			// if all tiles matched, tag as complete
 			if (matchedCount === this.list.length) {
 				this.isDone = true;
 				addToArray(this.className, _STATUS_CLASSES.success);
 			}
+
 			// if remaining buffer length is less than remaining sequence tiles
-			if (maxBuffer - bufferLength < this.list.length - matchedCount && !this.isDone) {
+			if (maxLength - bufferLength < this.list.length - matchedCount && !this.isDone) {
 				this.isDone = true;
 				addToArray(this.className, _STATUS_CLASSES.failed);
 			}
+
 			// add paddingCount for unmatched
 			this.paddingCount = bufferLength - matchedCount;
 		}
 	}
+
+	match = (currentIndex, matchTo) =>
+		!this.isDone && this.list[currentIndex - this.paddingCount].content === matchTo.content;
 }
 
 export default Sequence;

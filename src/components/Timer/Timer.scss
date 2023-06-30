@@ -20,7 +20,7 @@
 			height: 50px;
 			width: 100px;
 			background-color: #2a2822;
-			border: 1px solid var(--primary);
+			border: 2px solid var(--primary);
 		}
 	}
 	.progress-bar {
@@ -33,9 +33,18 @@
 			position: absolute;
 			background-color: var(--primary);
 			height: 100%;
-			width: 50%;
 			top: 0;
 			left: 0;
+			width: 100%;
+			transition: width 0.5s;
+			transition-timing-function: ease-in-out;
+		}
+		&.started {
+			&::before {
+				width: 0%;
+				transition: width var(--progress_percentage);
+				transition-timing-function: linear;
+			}
 		}
 	}
 }

@@ -9,32 +9,29 @@ import "./Sequences.scss";
 
 const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 	useMemo(() => {
-		if (focusedOrigin) {
-			if (!buffer.isFull()) {
+		if (buffer.isFull()) return;
+		sequences.map((sequence) => {
+			sequence.clean(_STATUS_CLASSES.focused);
+			if (focusedOrigin) {
+				const { list, paddingCount } = sequence;
 				const bufferWithFocused = [
 					...buffer.list.map((tile) => tile.content),
 					focusedOrigin.content,
 				];
-
-				sequences.map((sequence) => {
-					sequence;
-					sequence.clean(_STATUS_CLASSES.focused);
-					const { list, paddingCount } = sequence;
-					const isValid = bufferWithFocused
-						.slice(paddingCount)
-						.every((obj, i) => obj === list[i]?.content);
-					if (isValid) {
-						addToArray(
-							list[buffer.list.length - paddingCount]?.sequenceClassName,
-							_STATUS_CLASSES.focused
-						);
-					}
-				});
+				const isValid = bufferWithFocused
+					.slice(paddingCount)
+					.every((content, i) => content === list[i]?.content);
+				if (isValid) {
+					addToArray(
+						list[buffer.list.length - paddingCount]?.className.sequence,
+						_STATUS_CLASSES.focused
+					);
+				}
 			}
-		}
-	}, [buffer, focusedOrigin]);
+		});
+	}, [focusedOrigin]);
 
-	useMemo(() => sequences.map((sequence) => sequence.update(buffer)), [buffer]);
+	useMemo(() => sequences.map((sequence) => sequence.update(buffer)), [focusedOrigin]);
 
 	return (
 		<Container
@@ -42,11 +39,12 @@ const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 			content={
 				<div className="sequences-container">
 					{sequences.map((sequence, i) => {
-						const { list, className, isDone, paddingCount } = sequence;
+						const { list, isDone, className, paddingCount } = sequence;
 						return (
 							<ul className="sequence" key={i}>
 								{(() => {
 									const tiles = [];
+									// curtains
 									tiles.push(
 										<li key={`sequence-done-${i}`} className={`sequence-done ${className}`}>
 											<span>
@@ -54,6 +52,7 @@ const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 											</span>
 										</li>
 									);
+									// paddings
 									for (let x = 0; x < paddingCount; x++) {
 										tiles.push(
 											<li key={`padding-${x}${i}`}>
@@ -61,25 +60,30 @@ const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 											</li>
 										);
 									}
-									list.map((tile, i) => {
-										const { id, sequenceClassName, content } = tile;
-										tiles.push(
-											<li
-												key={`sequence-${id}${i}`}
-												className={
-													i === buffer.list.length - paddingCount ? _STATUS_CLASSES.highlighted : ""
-												}
-											>
-												<span
+									// data
+									if (!isDone) {
+										list.map((tile, i) => {
+											const { id, className, content } = tile;
+											tiles.push(
+												<li
 													key={`sequence-${id}${i}`}
-													className={[...sequenceClassName].join(" ")}
+													className={[...className.sequence].join(" ")}
+													// className={
+													// 	i === buffer.list.length - paddingCount
+													// 		? _STATUS_CLASSES.highlighted
+													// 		: ""
+													// }
 												>
-													{content}
-												</span>
-											</li>
-										);
-									});
-									// }
+													<span
+														key={`sequence-${id}${i}`}
+														className={[...className.sequence].join(" ")}
+													>
+														{content}
+													</span>
+												</li>
+											);
+										});
+									}
 									return tiles;
 								})()}
 							</ul>
