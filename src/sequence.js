@@ -16,24 +16,32 @@ class Sequence {
 			const bufferLength = list.length;
 			let matchedCount = 0;
 
-			// check for matched
 			this.list.map((tile, i) => {
 				const { content, className } = tile;
+
+				// check for matched
 				if (content === list.slice(this.paddingCount)[i]?.content) {
 					addToArray(className.sequence, _STATUS_CLASSES.matched);
 					matchedCount++;
 				}
+
+				// check for highlighted / active column
+				i === bufferLength - this.paddingCount &&
+					addToArray(
+						this.list[bufferLength - this.paddingCount].className.sequence,
+						_STATUS_CLASSES.highlighted
+					);
 			});
 
 			// if all tiles matched, tag as complete
 			if (matchedCount === this.list.length) {
-				this.isDone = true;
+				this.isDone = _STATUS_CLASSES.success;
 				addToArray(this.className, _STATUS_CLASSES.success);
 			}
 
 			// if remaining buffer length is less than remaining sequence tiles
 			if (maxLength - bufferLength < this.list.length - matchedCount && !this.isDone) {
-				this.isDone = true;
+				this.isDone = _STATUS_CLASSES.failed;
 				addToArray(this.className, _STATUS_CLASSES.failed);
 			}
 

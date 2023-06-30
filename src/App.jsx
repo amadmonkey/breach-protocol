@@ -14,10 +14,11 @@ import "./App.scss";
 function App() {
 	const [tiles, setTiles] = useState([]);
 	const [buffer, setBuffer] = useState(new Buffer({}));
+	const [started, setStarted] = useState(false);
 	const [boardSize, setBoardSize] = useState(5);
 	const [timeLimit, setTimeLimit] = useState(11);
 	const [sequences, setSequences] = useState([]);
-	const [started, setStarted] = useState(false);
+	const [bufferUpdate, setBufferUpdate] = useState(0);
 	const [focusedOrigin, setFocusedOrigin] = useState({});
 
 	const initializeBoard = async () => {
@@ -49,7 +50,7 @@ function App() {
 			// random sequence length between 2 - 4
 			const maxSequenceLength = Math.floor(Math.random() * (4 - 2 + 1) + 2);
 			const newSequence = list.splice(0, maxSequenceLength);
-			newSequence[0].className.sequence = [_STATUS_CLASSES.highlighted];
+			addToArray(newSequence[0].className.sequence, _STATUS_CLASSES.highlighted);
 			// push back last tile so they have connection
 			list.length && list.unshift(JSON.parse(JSON.stringify(newSequence[newSequence.length - 1])));
 			sequenceList.push(new Sequence(newSequence));
@@ -58,6 +59,19 @@ function App() {
 		// push to newSequence into the sequenceList
 		setSequences(sequenceList.sort((a, b) => a.list.length - b.list.length));
 		tiles.map((tile) => (tile.status = true));
+	};
+
+	const finished = (data) => {
+		switch (data.type) {
+			case "timer":
+				alert("done choom");
+				break;
+			case "sequence":
+				alert(JSON.stringify(data.stats));
+				break;
+		}
+		setStarted(false);
+		// setBuffer(new Buffer({}));
 	};
 
 	useEffect(() => {
@@ -70,10 +84,19 @@ function App() {
 
 	return (
 		<div className="main">
-			<button onClick={() => setBuffer(new Buffer({}))}>reset</button>
+			<header className="main-header grid">
+				<div></div>
+				<div>
+					<h1>BUFFER</h1>
+				</div>
+			</header>
 			<div className="header grid">
 				<div>
-					<Timer timeLimit={timeLimit} started={started} />
+					<Timer
+						timeLimit={timeLimit}
+						started={started}
+						callFinished={() => finished({ type: "timer" })}
+					/>
 				</div>
 				<div>
 					<BufferDisplay buffer={buffer} focusedOrigin={focusedOrigin} sequences={sequences} />
@@ -85,14 +108,30 @@ function App() {
 						tiles={tiles}
 						buffer={buffer}
 						boardSize={boardSize}
+						reset={() => setBuffer(new Buffer({}))}
 						startTimer={() => !started && setStarted(true)}
+						setBufferUpdate={() => setBufferUpdate(bufferUpdate + 1)}
 						setFocusedOrigin={(focusedOrigin) => setFocusedOrigin(focusedOrigin)}
 					/>
 				</div>
 				<div>
-					<Sequences buffer={buffer} focusedOrigin={focusedOrigin} sequences={sequences} />
+					<Sequences
+						buffer={buffer}
+						started={started}
+						focusedOrigin={focusedOrigin}
+						sequences={sequences}
+						bufferUpdate={bufferUpdate}
+						callFinished={(stats) => finished({ type: "sequence", stats })}
+					/>
 				</div>
 			</div>
+			<footer className="main-footer">
+				<p>
+					DISCLAIMER: This site is not affiliated with{" "}
+					<a href="https://www.cdprojektred.com/en"> CD PROJEKT RED</a> or{" "}
+					<a href="https://www.cyberpunk.net/ph/en/">CYBERPUNK 2077</a>.
+				</p>
+			</footer>
 		</div>
 	);
 }

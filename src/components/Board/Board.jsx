@@ -12,7 +12,15 @@ import ft4 from "../../assets/img/board/etc-ft-4.png";
 
 import "./Board.scss";
 
-const Board = ({ tiles, buffer, boardSize, startTimer, setFocusedOrigin }) => {
+const Board = ({
+	tiles,
+	buffer,
+	boardSize,
+	reset,
+	startTimer,
+	setBufferUpdate,
+	setFocusedOrigin,
+}) => {
 	const [axis, setAxis] = useState(new Axis({}));
 
 	const addBuffer = (newTile) => {
@@ -24,7 +32,7 @@ const Board = ({ tiles, buffer, boardSize, startTimer, setFocusedOrigin }) => {
 			// set new valid tiles
 			tiles.map((tile) => tile.setActive(buffer, axis));
 			buffer.getLength() === 1 && startTimer();
-			setFocusedOrigin(null);
+			setBufferUpdate();
 		} else {
 			newTile.clean(_STATUS_CLASSES.focused);
 		}
@@ -72,20 +80,25 @@ const Board = ({ tiles, buffer, boardSize, startTimer, setFocusedOrigin }) => {
 				</div>
 			}
 			footer={
-				<footer className="__footer">
-					<span>
-						<img src={ft1} alt="" />
-					</span>
-					<span>
-						<img src={ft2} alt="" />
-					</span>
-					<span>
-						<img src={ft3} alt="" />
-					</span>
-					<span>
-						<img src={ft4} alt="" />
-					</span>
-				</footer>
+				<div style={{ textAlign: "right" }}>
+					<div className="__footer">
+						<span>
+							<img src={ft1} alt="" />
+						</span>
+						<span>
+							<img src={ft2} alt="" />
+						</span>
+						<span>
+							<img src={ft3} alt="" />
+						</span>
+						<span>
+							<img src={ft4} alt="" />
+						</span>
+					</div>
+					<button className="btn" onClick={() => reset()}>
+						<span>RESET</span>
+					</button>
+				</div>
 			}
 			styles={{ width: "600px" }}
 		></Container>

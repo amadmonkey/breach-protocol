@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import "./Timer.scss";
 
-const Timer = ({ timeLimit, started }) => {
+const Timer = ({ timeLimit, started, callFinished }) => {
 	const [percentage, setPercentage] = useState(100);
 	const [elapsedTime, setElapsedTime] = useState(0);
 
@@ -14,7 +14,10 @@ const Timer = ({ timeLimit, started }) => {
 				const time = (Date.now() - startTime) / 1000;
 				setElapsedTime(timeLimit - time);
 				setPercentage(percentage - Math.floor((time / timeLimit) * 100));
-				time >= timeLimit && clearInterval(intervalCountdown);
+				if (time >= timeLimit) {
+					clearInterval(intervalCountdown);
+					callFinished();
+				}
 			}, 10);
 		} else {
 			setElapsedTime(0);
@@ -39,7 +42,7 @@ const Timer = ({ timeLimit, started }) => {
 			</div>
 			<div
 				className={`progress-bar ${started ? "started" : ""}`}
-				style={{ "--progress_percentage": `${started ? timeLimit : 0.5}s` }}
+				style={{ "--progress_percentage": `${started ? timeLimit : 0.2}s` }}
 			>
 				<span className="sr-only">{`${percentage}%`}</span>
 			</div>

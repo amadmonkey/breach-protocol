@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { addToArray, _STATUS_CLASSES } from "../../global.js";
 
 import SequenceLogo from "../../assets/img/board/sequence-logo.png";
@@ -7,13 +7,12 @@ import Container from "../Container/Container";
 
 import "./Sequences.scss";
 
-const Sequences = ({ buffer, focusedOrigin, sequences }) => {
+const Sequences = ({ buffer, started, focusedOrigin, sequences, bufferUpdate, callFinished }) => {
 	useMemo(() => {
-		if (buffer.isFull()) return;
 		sequences.map((sequence) => {
-			sequence.clean(_STATUS_CLASSES.focused);
+			const { list, paddingCount } = sequence;
+			sequence.clean([_STATUS_CLASSES.focused, _STATUS_CLASSES.highlighted]);
 			if (focusedOrigin) {
-				const { list, paddingCount } = sequence;
 				const bufferWithFocused = [
 					...buffer.list.map((tile) => tile.content),
 					focusedOrigin.content,
@@ -28,10 +27,28 @@ const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 					);
 				}
 			}
+			sequence.update(buffer);
 		});
-	}, [focusedOrigin]);
+	}, [bufferUpdate, focusedOrigin]);
 
-	useMemo(() => sequences.map((sequence) => sequence.update(buffer)), [focusedOrigin]);
+	useEffect(() => {
+		if (started) {
+			const stats = { success: 0, failed: 0 };
+			sequences.map((sequence) => {
+				switch (sequence.isDone) {
+					case _STATUS_CLASSES.success:
+						stats.success++;
+						break;
+					case _STATUS_CLASSES.failed:
+						stats.failed++;
+						break;
+				}
+			});
+			stats.success + stats.failed === sequences.length && callFinished(stats);
+		}
+	}, [bufferUpdate]);
+
+	// useMemo(() => sequences.map((sequence) => sequence.update(buffer)), [focusedOrigin]);
 
 	return (
 		<Container
@@ -68,11 +85,6 @@ const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 												<li
 													key={`sequence-${id}${i}`}
 													className={[...className.sequence].join(" ")}
-													// className={
-													// 	i === buffer.list.length - paddingCount
-													// 		? _STATUS_CLASSES.highlighted
-													// 		: ""
-													// }
 												>
 													<span
 														key={`sequence-${id}${i}`}
