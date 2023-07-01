@@ -35,6 +35,7 @@
 					border: 2px solid var(--focused);
 				}
 				&.__matched {
+					animation: shine 0.5s;
 					border-color: var(--primary);
 					color: var(--primary);
 				}

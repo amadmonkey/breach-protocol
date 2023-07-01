@@ -9,11 +9,11 @@ class Buffer {
 	};
 	isFull = () => this.getLength() >= this.maxLength;
 	getLength = () => this.list.length;
-	getByProperty = (property) => this.list.map((tile) => tile[property]);
-	getLastTile = () => this.getLength() && this.list.at(-1);
-	getLastPosition = () => this.list.at(-1)?.position ?? 0;
-	getLastIndex = () => (this.getLength() ? this.getLength() - 1 : null);
 	getContent = (index) => this.list[index]?.content ?? "";
+	getLastTile = () => this.getLength() && this.list.at(-1);
+	getLastIndex = () => (this.getLength() ? this.getLength() - 1 : null);
+	getByProperty = (property) => this.list.map((tile) => tile[property]);
+	getLastPosition = () => this.list.at(-1)?.position ?? 0;
 }
 
 export default Buffer;

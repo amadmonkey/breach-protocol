@@ -141,3 +141,11 @@
 		box-shadow: 0 0 10px var(--focused);
 	}
 }
+
+@keyframes shine {
+	50% {
+		border: 2x solid var(--focused);
+		color: var(--focused);
+		background-color: var(--focused);
+	}
+}

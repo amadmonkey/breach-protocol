@@ -15,11 +15,12 @@ import "./Board.scss";
 const Board = ({
 	tiles,
 	buffer,
+	started,
 	boardSize,
 	reset,
 	startTimer,
 	setBufferUpdate,
-	setFocusedOrigin,
+	setFocused,
 }) => {
 	const [axis, setAxis] = useState(new Axis({}));
 
@@ -38,8 +39,8 @@ const Board = ({
 		}
 	};
 
-	const updateFocusedOrigin = (focusedTile) =>
-		setFocusedOrigin(focusedTile?.isValid(buffer, axis) ? focusedTile : null);
+	const updateFocused = (focusedTile) =>
+		setFocused(focusedTile?.isValid(buffer, axis) ? focusedTile : null);
 
 	useEffect(() => setAxis(new Axis({})), [buffer]);
 
@@ -51,16 +52,16 @@ const Board = ({
 					<ul
 						className="board"
 						style={{ gridTemplateColumns: `repeat(${boardSize}, 1fr)` }}
-						onMouseLeave={() => updateFocusedOrigin(null)}
+						onMouseLeave={() => updateFocused(null)}
 					>
 						{tiles.map((tile) => {
 							return (
 								<li
 									key={tile.id}
 									className={tile.className.board.join(" ")}
-									onMouseEnter={() => updateFocusedOrigin(tile)}
-									onMouseLeave={() => updateFocusedOrigin(null)}
-									onFocus={() => updateFocusedOrigin(tile)}
+									onMouseEnter={() => updateFocused(tile)}
+									onMouseLeave={() => updateFocused(null)}
+									onFocus={() => updateFocused(tile)}
 									onClick={() => addBuffer(tile)}
 								>
 									<button>

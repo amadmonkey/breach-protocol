@@ -51,7 +51,9 @@ class Sequence {
 	}
 
 	match = (currentIndex, matchTo) =>
-		!this.isDone && this.list[currentIndex - this.paddingCount].content === matchTo.content;
+		!this.isDone &&
+		this.list[currentIndex - this.paddingCount].content === matchTo.content &&
+		matchTo;
 }
 
 export default Sequence;

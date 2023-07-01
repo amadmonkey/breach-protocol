@@ -5,12 +5,15 @@ export const _STATUS_CLASSES = {
 	success: "success",
 	failed: "failed",
 	disabled: "__disabled",
+	diversion: "__diversion",
 	focused: "__focused",
 	highlighted: "__highlighted",
 	matched: "__matched",
 	selected: "__selected",
 	x: "__x",
 	y: "__y",
+	add: "add",
+	subtract: "subtract",
 };
 
 export const rand = (list) => list[Math.floor(Math.random() * list.length)];

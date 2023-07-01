@@ -7,16 +7,13 @@ import Container from "../Container/Container";
 
 import "./Sequences.scss";
 
-const Sequences = ({ buffer, started, focusedOrigin, sequences, bufferUpdate, callFinished }) => {
+const Sequences = ({ buffer, started, focused, sequences, bufferUpdate, callFinished }) => {
 	useMemo(() => {
 		sequences.map((sequence) => {
 			const { list, paddingCount } = sequence;
 			sequence.clean([_STATUS_CLASSES.focused, _STATUS_CLASSES.highlighted]);
-			if (focusedOrigin) {
-				const bufferWithFocused = [
-					...buffer.list.map((tile) => tile.content),
-					focusedOrigin.content,
-				];
+			if (focused) {
+				const bufferWithFocused = [...buffer.list.map((tile) => tile.content), focused.content];
 				const isValid = bufferWithFocused
 					.slice(paddingCount)
 					.every((content, i) => content === list[i]?.content);
@@ -29,7 +26,7 @@ const Sequences = ({ buffer, started, focusedOrigin, sequences, bufferUpdate, ca
 			}
 			sequence.update(buffer);
 		});
-	}, [bufferUpdate, focusedOrigin]);
+	}, [bufferUpdate, focused]);
 
 	useEffect(() => {
 		if (started) {
@@ -47,8 +44,6 @@ const Sequences = ({ buffer, started, focusedOrigin, sequences, bufferUpdate, ca
 			stats.success + stats.failed === sequences.length && callFinished(stats);
 		}
 	}, [bufferUpdate]);
-
-	// useMemo(() => sequences.map((sequence) => sequence.update(buffer)), [focusedOrigin]);
 
 	return (
 		<Container

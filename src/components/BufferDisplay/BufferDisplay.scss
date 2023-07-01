@@ -8,10 +8,20 @@
 		background-color: var(--bg);
 		border: 2px solid var(--primary);
 		li {
+			position: relative;
 			display: grid;
 			align-items: center;
 			padding: 3px;
 			border: 2px dashed var(--primary-dark);
+			span {
+				position: relative;
+				display: inline-grid;
+				height: 25px;
+				width: 30px;
+				font-size: 27px;
+				align-items: center;
+				justify-items: center;
+			}
 			&.__focused {
 				border: 2px solid var(--focused);
 				box-shadow: 0 0 7px var(--focused);
@@ -28,13 +38,33 @@
 				border: 2px solid var(--primary);
 			}
 		}
-		span {
-			display: inline-grid;
-			height: 25px;
-			width: 30px;
-			font-size: 27px;
-			align-items: center;
-			justify-items: center;
+		.add-buffer {
+			cursor: pointer;
+			border: 2px dashed rgb(63, 63, 63);
+			color: rgb(63, 63, 63);
+			font-weight: bold;
+			transition: 0.2s;
+			&:hover {
+				color: var(--primary);
+				border: 2px solid var(--primary);
+			}
+		}
+		.delete-buffer {
+			position: absolute;
+			cursor: pointer;
+			border: 2px dashed var(--danger);
+			top: -2px;
+			left: -2px;
+			font-weight: bold;
+			font-size: 30px;
+			height: calc(100% + 4px);
+			width: calc(100% + 4px);
+			background-color: var(--bg);
+			color: var(--danger);
+			&:hover {
+				color: var(--danger);
+				border: 2px solid var(--danger);
+			}
 		}
 	}
 }
