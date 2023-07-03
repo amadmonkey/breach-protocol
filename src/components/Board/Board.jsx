@@ -15,8 +15,8 @@ import "./Board.scss";
 const Board = ({
 	tiles,
 	buffer,
-	started,
 	boardSize,
+	boardStatus,
 	reset,
 	startTimer,
 	setBufferUpdate,
@@ -49,35 +49,79 @@ const Board = ({
 			header={{ title: "CODE MATRIX", logo_url: codeMatrixLogo }}
 			content={
 				<div className="board-container">
-					<ul
-						className="board"
-						style={{ gridTemplateColumns: `repeat(${boardSize}, 1fr)` }}
-						onMouseLeave={() => updateFocused(null)}
-					>
-						{tiles.map((tile) => {
+					{(() => {
+						if (boardStatus) {
+							const { success, failed } = boardStatus;
+							const total = success + failed;
 							return (
-								<li
-									key={tile.id}
-									className={tile.className.board.join(" ")}
-									onMouseEnter={() => updateFocused(tile)}
-									onMouseLeave={() => updateFocused(null)}
-									onFocus={() => updateFocused(tile)}
-									onClick={() => addBuffer(tile)}
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "space-around",
+										gap: "20px",
+										height: "400px",
+										alignItems: "center",
+									}}
 								>
-									<button>
-										{!tile.status ? (
-											<>
-												<span>[</span>
-												<span>]</span>
-											</>
-										) : (
-											tile.content
-										)}
-									</button>
-								</li>
+									<div>
+										<h1 style={{ fontSize: "3em", margin: "20px 0" }}>{`${success}/${total}`}</h1>
+									</div>
+								</div>
 							);
-						})}
-					</ul>
+						} else {
+							return (
+								<ul
+									className="board"
+									style={{ gridTemplateColumns: `repeat(${boardSize}, 1fr)` }}
+									onMouseLeave={() => updateFocused(null)}
+								>
+									{(() => {
+										if (boardStatus) {
+											return (
+												<div style={{ display: "flex", justifyContent: "space-around" }}>
+													<Container
+														header={{ title: "SUCESS" }}
+														content={<h1>{boardStatus.success}</h1>}
+														customClasses={["success"]}
+													></Container>
+													<Container
+														header={{ title: "FAILED" }}
+														content={<h1>{boardStatus.failed}</h1>}
+														customClasses={["fail"]}
+													></Container>
+												</div>
+											);
+										} else {
+											return tiles.map((tile) => {
+												return (
+													<li
+														key={tile.id}
+														className={tile.className.board.join(" ")}
+														onMouseEnter={() => updateFocused(tile)}
+														onMouseLeave={() => updateFocused(null)}
+														onFocus={() => updateFocused(tile)}
+														onClick={() => addBuffer(tile)}
+													>
+														<button>
+															{!tile.status ? (
+																<>
+																	<span>[</span>
+																	<span>]</span>
+																</>
+															) : (
+																tile.content
+															)}
+														</button>
+													</li>
+												);
+											});
+										}
+									})()}
+								</ul>
+							);
+						}
+					})()}
 				</div>
 			}
 			footer={
@@ -97,11 +141,12 @@ const Board = ({
 						</span>
 					</div>
 					<button className="btn" onClick={() => reset()}>
-						<span>RESET</span>
+						<span>{boardStatus ? "PLAY AGAIN" : "RESET"}</span>
 					</button>
 				</div>
 			}
 			styles={{ width: "600px" }}
+			customClasses={[boardStatus ? (boardStatus.success ? "success" : "fail") : ""]}
 		></Container>
 	);
 };

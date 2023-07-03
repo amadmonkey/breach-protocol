@@ -12,8 +12,6 @@ export const _STATUS_CLASSES = {
 	selected: "__selected",
 	x: "__x",
 	y: "__y",
-	add: "add",
-	subtract: "subtract",
 };
 
 export const rand = (list) => list[Math.floor(Math.random() * list.length)];

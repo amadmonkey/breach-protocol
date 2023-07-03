@@ -7,11 +7,15 @@ import Container from "../Container/Container";
 
 import "./Sequences.scss";
 
-const Sequences = ({ buffer, started, focused, sequences, bufferUpdate, callFinished }) => {
+const Sequences = ({ buffer, started, focused, sequences, bufferUpdate, showResults }) => {
 	useMemo(() => {
 		sequences.map((sequence) => {
 			const { list, paddingCount } = sequence;
-			sequence.clean([_STATUS_CLASSES.focused, _STATUS_CLASSES.highlighted]);
+			sequence.clean([
+				_STATUS_CLASSES.matched,
+				_STATUS_CLASSES.focused,
+				_STATUS_CLASSES.highlighted,
+			]);
 			if (focused) {
 				const bufferWithFocused = [...buffer.list.map((tile) => tile.content), focused.content];
 				const isValid = bufferWithFocused
@@ -28,22 +32,29 @@ const Sequences = ({ buffer, started, focused, sequences, bufferUpdate, callFini
 		});
 	}, [bufferUpdate, focused]);
 
+	const getStats = (started) => {
+		const stats = { success: 0, failed: 0 };
+		sequences.map((sequence) => {
+			switch (sequence.isDone) {
+				case _STATUS_CLASSES.success:
+					stats.success++;
+					break;
+				case _STATUS_CLASSES.failed:
+					stats.failed++;
+				case false:
+					!started && stats.failed++;
+					break;
+			}
+		});
+		return stats.success + stats.failed === sequences.length && stats;
+	};
+
 	useEffect(() => {
-		if (started) {
-			const stats = { success: 0, failed: 0 };
-			sequences.map((sequence) => {
-				switch (sequence.isDone) {
-					case _STATUS_CLASSES.success:
-						stats.success++;
-						break;
-					case _STATUS_CLASSES.failed:
-						stats.failed++;
-						break;
-				}
-			});
-			stats.success + stats.failed === sequences.length && callFinished(stats);
+		if (started !== null) {
+			const stats = getStats(started);
+			stats && showResults(stats);
 		}
-	}, [bufferUpdate]);
+	}, [started, bufferUpdate]);
 
 	return (
 		<Container

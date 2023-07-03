@@ -4,9 +4,14 @@ import Etc1_Dark from "../../assets/img/board/etc1-dark.png";
 
 import "./Container.scss";
 
-const Container = ({ header, dark, content, footer, styles, children }) => {
+const Container = ({ header, dark, content, footer, styles, customClasses, children }) => {
 	return (
-		<div className={["container", dark ? "__dark" : ""].join(" ")} style={{ ...styles }}>
+		<div
+			className={[...["container", dark ? "__dark" : ""], ...[...([customClasses] ?? "")]].join(
+				" "
+			)}
+			style={{ ...styles }}
+		>
 			{header && (
 				<header>
 					<div className="title">

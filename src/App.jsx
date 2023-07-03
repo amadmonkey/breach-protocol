@@ -14,9 +14,10 @@ import "./App.scss";
 function App() {
 	const [tiles, setTiles] = useState([]);
 	const [buffer, setBuffer] = useState(new Buffer({}));
-	const [started, setStarted] = useState(false);
+	const [started, setStarted] = useState(null); // null: new game, true: timer start, false: game end
 	const [focused, setFocused] = useState({});
 	const [boardSize, setBoardSize] = useState(5);
+	const [boardStatus, setBoardStatus] = useState(null);
 	const [timeLimit, setTimeLimit] = useState(11);
 	const [sequences, setSequences] = useState([]);
 	const [hasDiversion, setHasDiversion] = useState(false);
@@ -46,10 +47,9 @@ function App() {
 		return tempBuffer.list;
 	};
 
-	const createSequenceLength = () => Math.floor(Math.random() * (4 - 2 + 1) + 2);
-
 	const generateSequence = (tiles) => {
 		const sequenceList = [];
+		const createSequenceLength = () => Math.floor(Math.random() * (4 - 2 + 1) + 2);
 
 		// create continuous sequence then divide with connections
 		const continuousList = createSequenceBuffer(tiles, buffer.maxLength);
@@ -75,16 +75,9 @@ function App() {
 		tiles.map((tile) => (tile.status = true));
 	};
 
-	const finished = (data) => {
+	const showResults = (stats) => {
 		setStarted(false);
-		switch (data.type) {
-			case "timer":
-				alert("done choom");
-				break;
-			case "sequence":
-				alert(JSON.stringify(data.stats));
-				break;
-		}
+		setBoardStatus(stats);
 	};
 
 	const updateBufferLength = (newLength) => {
@@ -94,11 +87,11 @@ function App() {
 			case 4:
 			case 5:
 				setBoardSize(5);
-				setTimeLimit(11);
+				setTimeLimit(8);
 				break;
 			case 6:
 				setBoardSize(6);
-				setTimeLimit(14);
+				setTimeLimit(11);
 				break;
 			case 7:
 			case 8:
@@ -110,6 +103,8 @@ function App() {
 	};
 
 	useEffect(() => {
+		setStarted(null);
+		setBoardStatus(null);
 		initializeBoard().then((tiles) => {
 			generateSequence(tiles);
 		});
@@ -125,11 +120,7 @@ function App() {
 			</header>
 			<div className="header grid">
 				<div>
-					<Timer
-						timeLimit={timeLimit}
-						started={started}
-						callFinished={() => finished({ type: "timer" })}
-					/>
+					<Timer timeLimit={timeLimit} started={started} setStarted={() => setStarted(false)} />
 				</div>
 				<div>
 					<BufferDisplay
@@ -145,8 +136,8 @@ function App() {
 					<Board
 						tiles={tiles}
 						buffer={buffer}
-						started={started}
 						boardSize={boardSize}
+						boardStatus={boardStatus}
 						reset={() => setBuffer(new Buffer({ maxLength: buffer.maxLength }))}
 						startTimer={() => !started && setStarted(true)}
 						setBufferUpdate={() => setBufferUpdate(bufferUpdate + 1)}
@@ -160,7 +151,7 @@ function App() {
 						focused={focused}
 						sequences={sequences}
 						bufferUpdate={bufferUpdate}
-						callFinished={(stats) => finished({ type: "sequence", stats })}
+						showResults={(stats) => showResults(stats)}
 					/>
 				</div>
 			</div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import "./Timer.scss";
 
-const Timer = ({ timeLimit, started, callFinished }) => {
+const Timer = ({ timeLimit, started, setStarted }) => {
 	const [percentage, setPercentage] = useState(100);
 	const [elapsedTime, setElapsedTime] = useState(0);
 
@@ -16,7 +16,7 @@ const Timer = ({ timeLimit, started, callFinished }) => {
 				setPercentage(percentage - Math.floor((time / timeLimit) * 100));
 				if (time >= timeLimit) {
 					clearInterval(intervalCountdown);
-					callFinished();
+					setStarted();
 				}
 			}, 10);
 		} else {

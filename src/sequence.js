@@ -4,7 +4,7 @@ class Sequence {
 	constructor(list = []) {
 		this.list = list;
 		this.paddingCount = 0;
-		this.isDone = false;
+		this.isDone = false; // false || string: if true, set success or fail string
 		this.className = [];
 	}
 	clean = (classList) =>
