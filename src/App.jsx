@@ -11,6 +11,9 @@ import BufferDisplay from "./components/BufferDisplay/BufferDisplay.jsx";
 
 import "./App.scss";
 
+// TODO:
+// 1. add instructions
+
 function App() {
 	const [tiles, setTiles] = useState([]);
 	const [buffer, setBuffer] = useState(new Buffer({}));
@@ -18,7 +21,7 @@ function App() {
 	const [focused, setFocused] = useState({});
 	const [boardSize, setBoardSize] = useState(5);
 	const [boardStatus, setBoardStatus] = useState(null);
-	const [timeLimit, setTimeLimit] = useState(11);
+	const [timeLimit, setTimeLimit] = useState(8);
 	const [sequences, setSequences] = useState([]);
 	const [hasDiversion, setHasDiversion] = useState(false);
 	const [bufferUpdate, setBufferUpdate] = useState(0);

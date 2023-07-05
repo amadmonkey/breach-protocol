@@ -1,26 +1,34 @@
 .buffer-container {
-	display: grid;
+	display: flex;
+	width: 100%;
 	padding: 10px 0;
 	.buffer-display {
-		display: flex;
+		min-width: 190px;
+		max-width: 390px;
+		width: 190px;
+		position: relative;
+		display: inline-flex;
+		align-items: center;
 		gap: 10px;
 		padding: 18.7px;
 		background-color: var(--bg);
 		border: 2px solid var(--primary);
-		li {
+		transition: padding 0.1s;
+		li.display-tile {
 			position: relative;
 			display: grid;
 			align-items: center;
 			padding: 3px;
 			border: 2px dashed var(--primary-dark);
-			span {
+			> span {
 				position: relative;
 				display: inline-grid;
-				height: 25px;
+				height: 30px;
 				width: 30px;
 				font-size: 27px;
 				align-items: center;
 				justify-items: center;
+				box-sizing: border-box;
 			}
 			&.__focused {
 				border: 2px solid var(--focused);
@@ -38,32 +46,65 @@
 				border: 2px solid var(--primary);
 			}
 		}
-		.add-buffer {
-			cursor: pointer;
-			border: 2px dashed rgb(63, 63, 63);
-			color: rgb(63, 63, 63);
-			font-weight: bold;
-			transition: 0.2s;
-			&:hover {
-				color: var(--primary);
-				border: 2px solid var(--primary);
-			}
+	}
+	.buffer-manage {
+		cursor: col-resize;
+		display: none;
+		position: absolute;
+		align-items: center;
+		top: 0;
+		height: 100%;
+	}
+	&:hover {
+		.buffer-display {
+			padding-right: 35px;
 		}
-		.delete-buffer {
-			position: absolute;
-			cursor: pointer;
-			border: 2px dashed var(--danger);
-			top: -2px;
-			left: -2px;
-			font-weight: bold;
-			font-size: 30px;
-			height: calc(100% + 4px);
-			width: calc(100% + 4px);
-			background-color: var(--bg);
-			color: var(--danger);
-			&:hover {
-				color: var(--danger);
-				border: 2px solid var(--danger);
+		.buffer-manage {
+			display: flex;
+			> button {
+				cursor: pointer;
+				height: 100%;
+				background: none;
+				border: none;
+				padding: 0;
+				&:active {
+					cursor: grabbing;
+				}
+				.arrow {
+					position: relative;
+					display: flex;
+					height: inherit;
+					width: inherit;
+					&::before {
+						content: "";
+						align-self: center;
+						border: 10px solid transparent;
+					}
+				}
+			}
+			&.__add {
+				right: -35px;
+				transform-origin: left;
+				> button {
+					> .arrow {
+						padding-left: 14px;
+						&::before {
+							border-left-color: var(--primary);
+						}
+					}
+				}
+			}
+			&.__reduce {
+				right: -1px;
+				transform-origin: right;
+				> button {
+					> .arrow {
+						padding-right: 14px;
+						&::before {
+							border-right-color: var(--primary);
+						}
+					}
+				}
 			}
 		}
 	}
