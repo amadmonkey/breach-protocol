@@ -68,7 +68,8 @@ const BufferDisplay = ({
 			let newWidth = width + toAdd;
 			newWidth += 1 * (e.target.classList.contains("right") ? -25 : 25);
 			bufferContainer.current.style.width = `${newWidth}px`;
-			setDragBufferCount(Math.ceil(getContainerWidth() / 50));
+			const newBufferCount = Math.ceil(getContainerWidth() / 50);
+			setDragBufferCount(newBufferCount < 4 ? 4 : newBufferCount);
 		}
 	};
 
