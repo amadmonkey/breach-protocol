@@ -120,7 +120,7 @@ function App() {
 		<div className="main">
 			<header className="main-header grid">
 				<div>
-					<img className="logo" src={logo} alt="Breach Protocol Logo" />
+					<h1>BREACH PROTOCOL</h1>
 				</div>
 				<div>
 					<h1>BUFFER</h1>
