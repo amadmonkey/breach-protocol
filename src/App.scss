@@ -38,7 +38,7 @@
 				flex-grow: 1;
 			}
 			> div {
-				max-width: 500px;
+				max-width: 600px;
 			}
 			@include for-tablet-portrait-up() {
 				&:first-child {
