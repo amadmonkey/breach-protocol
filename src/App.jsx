@@ -168,7 +168,7 @@ function App() {
 			</div>
 			<footer className="main-footer">
 				<p>
-					This site is not affiliated with
+					This is a fansite is not affiliated with
 					<a href="https://www.cdprojektred.com/en" target="_blank">
 						<img
 							src="https://www.cdprojektred.com/build/images/img/logo-black-5c590770.svg"
@@ -177,7 +177,7 @@ function App() {
 						/>
 					</a>
 					or
-					<a href="https://www.cyberpunk.net/ph/en/" target="_blank">
+					<a href="https://www.cyberpunk.net" target="_blank">
 						<img
 							src="https://www.cyberpunk.net/build/images/home8/logo-franchise-black-en@1x-567991b0.png"
 							alt="CYBERPUNK 2077"
