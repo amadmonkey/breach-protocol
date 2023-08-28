@@ -1,34 +1,141 @@
+@import "../../var.scss";
+
 .buffer-container {
-	display: grid;
+	display: flex;
+	flex-direction: column;
 	padding: 10px 0;
+
+	@include for-tablet-portrait-up() {
+		width: unset;
+		flex-direction: row;
+		.progress-bar {
+			display: none;
+		}
+	}
+
 	.buffer-display {
-		display: flex;
+		max-width: 390px;
+		position: relative;
+		display: inline-flex;
+		align-items: center;
 		gap: 10px;
 		padding: 18.7px;
 		background-color: var(--bg);
 		border: 2px solid var(--primary);
-		li {
+		transition: padding 0.1s;
+		li.display-tile {
+			position: relative;
 			display: grid;
 			align-items: center;
-			&.__matched {
+			padding: 3px;
+			border: 2px dashed var(--primary-dark);
+			> span {
+				position: relative;
+				display: inline-grid;
+				height: 15px;
+				width: 15px;
+				font-size: 14px;
+				align-items: center;
+				justify-items: center;
+				box-sizing: border-box;
+				@include for-tablet-portrait-up() {
+					height: 30px;
+					width: 30px;
+					font-size: 27px;
+				}
+			}
+			&.__focused {
+				border: 2px solid var(--focused);
+				box-shadow: 0 0 7px var(--focused);
+				color: var(--focused);
+				@supports not (-moz-appearance: none) {
+					animation: glow 1s infinite;
+				}
 				span {
-					border: 2px solid var(--focused);
-					box-shadow: 0 0 7px var(--focused);
-					color: var(--focused);
-					@supports not (-moz-appearance: none) {
-						animation: glow 1s infinite;
+					animation: blink 1s infinite;
+					border-bottom: 2.5px solid var(--primary);
+				}
+			}
+			&.__matched {
+				border: 2px solid var(--primary);
+			}
+		}
+	}
+	.buffer-manage {
+		cursor: col-resize;
+		display: none;
+		position: absolute;
+		align-items: center;
+		top: 0;
+		height: 100%;
+	}
+	&:hover,
+	&:active {
+		.buffer-display {
+			padding-right: 35px;
+		}
+		.buffer-manage {
+			display: flex;
+			> button {
+				cursor: pointer;
+				height: 100%;
+				background: none;
+				border: none;
+				padding: 0;
+				&:active {
+					cursor: grabbing;
+				}
+				.arrow {
+					position: relative;
+					display: flex;
+					height: inherit;
+					width: inherit;
+					&::before {
+						content: "";
+						align-self: center;
+						border: 10px solid transparent;
+					}
+				}
+			}
+			&.__add {
+				right: -35px;
+				transform-origin: left;
+				> button {
+					> .arrow {
+						padding-left: 14px;
+						&::before {
+							border-left-color: var(--primary);
+						}
+					}
+				}
+			}
+			&.__reduce {
+				right: -1px;
+				transform-origin: right;
+				> button {
+					> .arrow {
+						padding-right: 14px;
+						&::before {
+							border-right-color: var(--primary);
+						}
 					}
 				}
 			}
 		}
-		span {
-			display: inline-grid;
-			height: 35px;
-			width: 35px;
-			border: 2px dashed var(--primary-dark);
-			font-size: 30px;
-			align-items: center;
-			justify-items: center;
-		}
+	}
+}
+
+@keyframes blink {
+	0% {
+		border-color: var(--primary);
+	}
+	50% {
+		border-color: var(--primary);
+	}
+	51% {
+		border-color: var(--bg);
+	}
+	100% {
+		border-color: var(--bg);
 	}
 }

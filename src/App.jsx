@@ -1,122 +1,191 @@
 import { useEffect, useState } from "react";
-import { isCurrentAxis, rand, _STATUS_CLASSES, _CODES, _AXES } from "./global.js";
-import Board from "./components/board/board";
+import { rand, addToArray, _STATUS_CLASSES, _CODES, _AXES } from "./global.js";
+import Axis from "./axis.js";
+import Tile from "./tile.js";
 import Buffer from "./buffer.js";
-import Sequences from "./components/Sequences/Sequences.jsx";
+import Sequence from "./sequence.js";
+import Board from "./components/Board/Board";
 import Timer from "./components/Timer/Timer.jsx";
+import Sequences from "./components/Sequences/Sequences.jsx";
 import BufferDisplay from "./components/BufferDisplay/BufferDisplay.jsx";
+
+import logo from "../src/assets/logo.png";
 
 import "./App.scss";
 
+// TODO:
+// 1. add instructions
+// 2. add diversions
+
 function App() {
-	const sequenceCount = 2;
-	const sequenceLength = 4;
-	const maxBuffer = 4;
-	const [boardSize, setBoardSize] = useState(5);
 	const [tiles, setTiles] = useState([]);
+	const [buffer, setBuffer] = useState(new Buffer({}));
+	const [started, setStarted] = useState(null); // null: new game, true: timer start, false: game end
+	const [focused, setFocused] = useState({});
+	const [boardSize, setBoardSize] = useState(5);
+	const [boardStatus, setBoardStatus] = useState(null);
+	const [timeLimit, setTimeLimit] = useState(8);
 	const [sequences, setSequences] = useState([]);
-	const [focusedOrigin, setFocusedOrigin] = useState({});
-	const [buffer, setBuffer] = useState(
-		new Buffer({
-			list: [],
-			maxBuffer: maxBuffer,
-		})
-	);
-
-	const addBuffer = (tile) => {
-		tile.disabled = true;
-		buffer.add(tile);
-
-		const { list, maxBuffer } = buffer;
-		const tempBuffer = new Buffer({ list, maxBuffer });
-
-		setBuffer(tempBuffer);
-	};
+	const [hasDiversion, setHasDiversion] = useState(false);
+	const [bufferUpdate, setBufferUpdate] = useState(0);
 
 	const initializeBoard = async () => {
 		const tiles = [];
 		for (let x = 0; x < boardSize; x++) {
 			for (let y = 0; y < boardSize; y++) {
-				tiles.push({
-					id: `t-${x}${y}`,
-					content: rand(_CODES),
-					position: { x, y },
-					disabled: false,
-					className: [
-						`${x === 0 ? _STATUS_CLASSES.highlighted : _STATUS_CLASSES.disabled}`,
-						`${x === 0 && y === 0 ? _STATUS_CLASSES.first : ""}`,
-						`${x === 0 && y === boardSize - 1 ? _STATUS_CLASSES.last : ""}`,
-						`${x === 0 || y === boardSize - 1 ? _STATUS_CLASSES.x : ""}`,
-					],
-				});
+				addToArray(tiles, new Tile({ status: true, position: { x, y } }));
 			}
 		}
 		setTiles(tiles);
 		return tiles;
 	};
 
+	const createSequenceBuffer = (tiles, maxLength) => {
+		const tempAxis = new Axis({});
+		const tempBuffer = new Buffer({ maxLength });
+		for (let x = 0; x < tempBuffer.maxLength; x++) {
+			const validTiles = tiles.filter((tile) => tile.isValid(tempBuffer, tempAxis)); // get valid tiles
+			const randomTile = rand(validTiles); // select a tile randomly from the valid tiles
+			randomTile.status = false;
+			tempBuffer.add(randomTile);
+			tempAxis.toggle();
+		}
+		return tempBuffer.list;
+	};
+
 	const generateSequence = (tiles) => {
 		const sequenceList = [];
-		for (let x = 0; x < sequenceCount; x++) {
-			const tempAxis = { active: _AXES.X, inactive: _AXES.Y };
-			const tempBuffer = new Buffer({
-				list: [],
-				max: maxBuffer,
-			});
-			for (let y = 0; y < sequenceLength; y++) {
-				const validTiles = [];
-				// compile valid tiles
-				tiles.map((tile) => {
-					if (
-						!tile.disabled &&
-						isCurrentAxis(tempBuffer.getLastPosition(), tempAxis, tile.position)
-					) {
-						validTiles.push(tile);
-					}
-				});
-				// select a tile randomly from the valid tiles
-				const randomTile = rand(validTiles);
-				tempBuffer.add(randomTile);
-				randomTile.disabled = true;
-				Object.assign(tempAxis, { active: tempAxis.inactive, inactive: tempAxis.active });
-			}
-			// push to newSequence into the sequenceList
-			sequenceList.push(tempBuffer.list);
+		const createSequenceLength = () => Math.floor(Math.random() * (4 - 2 + 1) + 2);
+
+		// create continuous sequence then divide with connections
+		const continuousList = createSequenceBuffer(tiles, buffer.maxLength);
+		while (continuousList.length) {
+			const newSequence = continuousList.splice(0, createSequenceLength());
+			addToArray(newSequence[0].className.sequence, _STATUS_CLASSES.highlighted);
+			continuousList.length &&
+				continuousList.unshift(JSON.parse(JSON.stringify(newSequence[newSequence.length - 1])));
+			sequenceList.push(new Sequence(newSequence));
 		}
-		setSequences(sequenceList);
-		tiles.map((tile) => (tile.disabled = false));
+
+		// randomly add diversion
+		if (hasDiversion) {
+			if (Math.random() < 0.5) {
+				const diversionList = createSequenceBuffer(tiles, createSequenceLength());
+				addToArray(diversionList[0].className.sequence, _STATUS_CLASSES.highlighted);
+				sequenceList.push(new Sequence(diversionList));
+			}
+		}
+
+		// push to newSequence into the sequenceList
+		setSequences(sequenceList.sort((a, b) => a.list.length - b.list.length));
+		tiles.map((tile) => (tile.status = true));
+	};
+
+	const showResults = (stats) => {
+		setStarted(false);
+		setBoardStatus(stats);
+	};
+
+	const updateBufferLength = (newLength) => {
+		setStarted(false);
+		switch (newLength) {
+			default:
+			case 4:
+			case 5:
+				setBoardSize(5);
+				setTimeLimit(8);
+				break;
+			case 6:
+				setBoardSize(6);
+				setTimeLimit(11);
+				break;
+			case 7:
+			case 8:
+				setBoardSize(7);
+				setTimeLimit(14);
+				break;
+		}
+		setBuffer(new Buffer({ maxLength: newLength }));
 	};
 
 	useEffect(() => {
+		setStarted(null);
+		setBoardStatus(null);
 		initializeBoard().then((tiles) => {
 			generateSequence(tiles);
 		});
-	}, [boardSize]);
+	}, [buffer]);
 
 	return (
 		<div className="main">
-			<div className="header grid">
+			<header className="main-header grid">
 				<div>
-					<Timer />
+					<img className="logo" src={logo} alt="Breach Protocol Logo" />
 				</div>
 				<div>
-					<BufferDisplay buffer={buffer} focusedOrigin={focusedOrigin} sequences={sequences} />
+					<h1>BUFFER</h1>
+				</div>
+			</header>
+			<div className="header grid">
+				<div>
+					<Timer timeLimit={timeLimit} started={started} setStarted={() => setStarted(false)} />
+				</div>
+				<div className="buffer-float">
+					<BufferDisplay
+						buffer={buffer}
+						focused={focused}
+						sequences={sequences}
+						updateBufferLength={(newLength) => updateBufferLength(newLength)}
+						timeLimit={timeLimit}
+						started={started}
+						setStarted={() => setStarted(false)}
+					/>
 				</div>
 			</div>
 			<div className="body grid">
 				<div>
 					<Board
+						tiles={tiles}
 						buffer={buffer}
 						boardSize={boardSize}
-						tiles={tiles}
-						addBuffer={addBuffer}
-						setFocusedOrigin={(focusedOrigin) => setFocusedOrigin(focusedOrigin)}
+						boardStatus={boardStatus}
+						reset={() => setBuffer(new Buffer({ maxLength: buffer.maxLength }))}
+						startTimer={() => !started && setStarted(true)}
+						setBufferUpdate={() => setBufferUpdate(bufferUpdate + 1)}
+						setFocused={(focused) => setFocused(focused)}
 					/>
 				</div>
 				<div>
-					<Sequences buffer={buffer} focusedOrigin={focusedOrigin} sequences={sequences} />
+					<Sequences
+						buffer={buffer}
+						started={started}
+						focused={focused}
+						sequences={sequences}
+						bufferUpdate={bufferUpdate}
+						showResults={(stats) => showResults(stats)}
+					/>
 				</div>
 			</div>
+			<footer className="main-footer">
+				<p>
+					This site is not affiliated with
+					<a href="https://www.cdprojektred.com/en" target="_blank">
+						<img
+							src="https://www.cdprojektred.com/build/images/img/logo-black-5c590770.svg"
+							alt="CD PROJEKT RED"
+							title="CD PROJEKT RED"
+						/>
+					</a>
+					or
+					<a href="https://www.cyberpunk.net/ph/en/" target="_blank">
+						<img
+							src="https://www.cyberpunk.net/build/images/home8/logo-franchise-black-en@1x-567991b0.png"
+							alt="CYBERPUNK 2077"
+							title="CYBERPUNK 2077"
+						/>
+					</a>
+				</p>
+			</footer>
 		</div>
 	);
 }

@@ -1,5 +1,5 @@
 .time-limit {
-	width: 600px;
+	width: 100%;
 	box-sizing: border-box;
 	padding: 5px 0;
 	header {
@@ -20,22 +20,7 @@
 			height: 50px;
 			width: 100px;
 			background-color: #2a2822;
-			border: 1px solid var(--primary);
-		}
-	}
-	.progress-bar {
-		position: relative;
-		height: 10px;
-		width: 100%;
-		border: 1px solid var(--primary);
-		&::before {
-			content: "";
-			position: absolute;
-			background-color: var(--primary);
-			height: 100%;
-			width: 50%;
-			top: 0;
-			left: 0;
+			border: 2px solid var(--primary);
 		}
 	}
 }

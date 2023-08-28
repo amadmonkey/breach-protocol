@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { _STATUS_CLASSES } from "../../global.js";
+import React, { useEffect, useMemo } from "react";
+import { addToArray, _STATUS_CLASSES } from "../../global.js";
 
 import SequenceLogo from "../../assets/img/board/sequence-logo.png";
 import ft4 from "../../assets/img/board/etc-ft-4.png";
@@ -7,13 +7,54 @@ import Container from "../Container/Container";
 
 import "./Sequences.scss";
 
-const Sequences = ({ buffer, focusedOrigin, sequences }) => {
-	const [withClasses, setWithClasses] = useState(sequences);
+const Sequences = ({ buffer, started, focused, sequences, bufferUpdate, showResults }) => {
+	useMemo(() => {
+		sequences.map((sequence) => {
+			const { list, paddingCount } = sequence;
+			sequence.clean([
+				_STATUS_CLASSES.matched,
+				_STATUS_CLASSES.focused,
+				_STATUS_CLASSES.highlighted,
+			]);
+			if (focused) {
+				const bufferWithFocused = [...buffer.list.map((tile) => tile.content), focused.content];
+				const isValid = bufferWithFocused
+					.slice(paddingCount)
+					.every((content, i) => content === list[i]?.content);
+				if (isValid) {
+					addToArray(
+						list[buffer.list.length - paddingCount]?.className.sequence,
+						_STATUS_CLASSES.focused
+					);
+				}
+			}
+			sequence.update(buffer);
+		});
+	}, [bufferUpdate, focused]);
+
+	const getStats = (started) => {
+		const stats = { success: 0, failed: 0 };
+		sequences.map((sequence) => {
+			switch (sequence.isDone) {
+				case _STATUS_CLASSES.success:
+					stats.success++;
+					break;
+				case _STATUS_CLASSES.failed:
+					stats.failed++;
+				case false:
+					!started && stats.failed++;
+					break;
+			}
+		});
+		return stats.success + stats.failed === sequences.length && stats;
+	};
 
 	useEffect(() => {
-		// console.log(sequences);
-		// setWithClasses(sequences);
-	}, [focusedOrigin]);
+		if (started !== null) {
+			const stats = getStats(started);
+			stats && showResults(stats);
+		}
+	}, [started, bufferUpdate]);
 
 	return (
 		<Container
@@ -21,19 +62,48 @@ const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 			content={
 				<div className="sequences-container">
 					{sequences.map((sequence, i) => {
+						const { list, isDone, className, paddingCount } = sequence;
 						return (
 							<ul className="sequence" key={i}>
-								{sequence.map((tile, i) => {
-									return (
-										<li
-											key={`sequence-${tile.id}`}
-											id={`sequence-${tile.id}`}
-											className={buffer.getLength() === i ? _STATUS_CLASSES.highlighted : ""}
-										>
-											<span>{tile.content}</span>
+								{(() => {
+									const tiles = [];
+									// curtains
+									tiles.push(
+										<li key={`sequence-done-${i}`} className={`sequence-done ${className}`}>
+											<span>
+												{className.includes(_STATUS_CLASSES.success) ? "INSTALLED" : "FAILED"}
+											</span>
 										</li>
 									);
-								})}
+									// paddings
+									for (let x = 0; x < paddingCount; x++) {
+										tiles.push(
+											<li key={`padding-${x}${i}`}>
+												<span>&nbsp;</span>
+											</li>
+										);
+									}
+									// data
+									if (!isDone) {
+										list.map((tile, i) => {
+											const { id, className, content } = tile;
+											tiles.push(
+												<li
+													key={`sequence-${id}${i}`}
+													className={[...className.sequence].join(" ")}
+												>
+													<span
+														key={`sequence-${id}${i}`}
+														className={[...className.sequence].join(" ")}
+													>
+														{content}
+													</span>
+												</li>
+											);
+										});
+									}
+									return tiles;
+								})()}
 							</ul>
 						);
 					})}
@@ -54,7 +124,6 @@ const Sequences = ({ buffer, focusedOrigin, sequences }) => {
 				</footer>
 			}
 			dark
-			styles={{ maxWidth: "800px", width: "100%" }}
 		></Container>
 	);
 };

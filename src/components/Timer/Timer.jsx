@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import "./Timer.scss";
+import TimerBar from "./TimerBar";
 
-const Timer = () => {
+const Timer = ({ timeLimit, started, setStarted }) => {
+	const [elapsedTime, setElapsedTime] = useState(0);
+
 	return (
 		<div className="time-limit">
 			<header>
@@ -13,11 +16,17 @@ const Timer = () => {
 			</header>
 			<div className="content">
 				<h1>BREACH TIME REMAINING</h1>
-				<div className="timer">70.50</div>
+				<div className="timer">
+					{(elapsedTime ? (elapsedTime < 0 ? 0 : elapsedTime) : timeLimit).toFixed(2)}
+				</div>
 			</div>
-			<div className="progress-bar">
-				<span className="sr-only">100%</span>
-			</div>
+			<TimerBar
+				timeLimit={timeLimit}
+				started={started}
+				setStarted={() => setStarted()}
+				elapsedTime={elapsedTime}
+				emitElapsedTime={(elapsedTime) => setElapsedTime(elapsedTime)}
+			/>
 		</div>
 	);
 };

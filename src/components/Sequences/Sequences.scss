@@ -1,36 +1,104 @@
 .sequences-container {
+	display: flex;
+	flex-direction: column;
 	width: 100%;
-	padding: 10px 20px;
+	margin-bottom: 50px;
 	box-sizing: border-box;
+	padding: 7px 19px;
 	.sequence {
+		position: relative;
 		display: flex;
-		font-size: 27px;
 		gap: 10px;
+		height: 70px;
 		li {
+			position: relative;
 			display: grid;
-			justify-content: center;
-			height: 60px;
-			width: 33px;
+			align-items: center;
+			height: 40px;
+			box-sizing: border-box;
 			color: var(--white);
-			text-align: center;
+			z-index: -1;
 			span {
-				display: grid;
-				align-content: center;
-				height: 30px;
-				width: inherit;
+				display: inline-grid;
+				height: 40px;
+				width: 40px;
+				font-size: 27px;
+				align-items: center;
+				justify-items: center;
+				padding: 3px;
 				box-sizing: border-box;
+				border: 2px solid transparent;
+				&.__focused {
+					box-shadow: 0 0 10px var(--focused);
+					box-sizing: border-box;
+					color: var(--focused);
+					border: 2px solid var(--focused);
+				}
+				&.__matched {
+					animation: shine 0.5s;
+					border-color: var(--primary);
+					color: var(--primary);
+				}
 			}
 			&.__highlighted {
-				background-color: #201e33;
-			}
-			&.__focused {
-				span {
-					border: 1px solid var(--focused);
-					box-shadow: 0 0 7px var(--focused);
-					@supports not (-moz-appearance: none) {
-						animation: glow 1s infinite;
-					}
+				&::before {
+					content: "";
+					position: absolute;
+					left: 0;
+					top: 0;
+					height: 90px;
+					width: 100%;
+					background-color: #201e33;
+					z-index: -1;
 				}
+			}
+		}
+		.sequence-done {
+			display: grid;
+			align-items: start;
+			position: absolute;
+			height: 0;
+			width: 100%;
+			color: var(--bg);
+			top: 0;
+			left: 0;
+			z-index: 1;
+			transition: height 150ms;
+			pointer-events: none;
+			overflow: hidden;
+			span {
+				font-size: 21px;
+				padding-left: 20px;
+				padding-top: 5px;
+			}
+			&.success,
+			&.failed {
+				border-top: 1px solid var(--bg);
+				height: 100%;
+				&::before {
+					border-top-color: var(--danger);
+					border-left-color: var(--danger);
+				}
+			}
+			&.success {
+				background-color: var(--success);
+				&::before {
+					border-top-color: var(--success);
+					border-left-color: var(--success);
+				}
+			}
+			&.failed {
+				background-color: var(--danger);
+			}
+			&::before {
+				content: "";
+				position: absolute;
+				height: 0;
+				width: 0;
+				right: 0;
+				bottom: 0;
+				background-color: var(--bg);
+				border: 10px solid var(--bg);
 			}
 		}
 	}
