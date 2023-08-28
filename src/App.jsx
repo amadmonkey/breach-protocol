@@ -9,10 +9,13 @@ import Timer from "./components/Timer/Timer.jsx";
 import Sequences from "./components/Sequences/Sequences.jsx";
 import BufferDisplay from "./components/BufferDisplay/BufferDisplay.jsx";
 
+import logo from "../src/assets/logo.png";
+
 import "./App.scss";
 
 // TODO:
 // 1. add instructions
+// 2. add diversions
 
 function App() {
 	const [tiles, setTiles] = useState([]);
@@ -116,7 +119,9 @@ function App() {
 	return (
 		<div className="main">
 			<header className="main-header grid">
-				<div></div>
+				<div>
+					<img className="logo" src={logo} alt="Breach Protocol Logo" />
+				</div>
 				<div>
 					<h1>BUFFER</h1>
 				</div>
@@ -125,12 +130,15 @@ function App() {
 				<div>
 					<Timer timeLimit={timeLimit} started={started} setStarted={() => setStarted(false)} />
 				</div>
-				<div>
+				<div className="buffer-float">
 					<BufferDisplay
 						buffer={buffer}
 						focused={focused}
 						sequences={sequences}
 						updateBufferLength={(newLength) => updateBufferLength(newLength)}
+						timeLimit={timeLimit}
+						started={started}
+						setStarted={() => setStarted(false)}
 					/>
 				</div>
 			</div>
@@ -160,9 +168,22 @@ function App() {
 			</div>
 			<footer className="main-footer">
 				<p>
-					DISCLAIMER: This site is not affiliated with{" "}
-					<a href="https://www.cdprojektred.com/en"> CD PROJEKT RED</a> or{" "}
-					<a href="https://www.cyberpunk.net/ph/en/">CYBERPUNK 2077</a>.
+					This site is not affiliated with
+					<a href="https://www.cdprojektred.com/en" target="_blank">
+						<img
+							src="https://www.cdprojektred.com/build/images/img/logo-black-5c590770.svg"
+							alt="CD PROJEKT RED"
+							title="CD PROJEKT RED"
+						/>
+					</a>
+					or
+					<a href="https://www.cyberpunk.net/ph/en/" target="_blank">
+						<img
+							src="https://www.cyberpunk.net/build/images/home8/logo-franchise-black-en@1x-567991b0.png"
+							alt="CYBERPUNK 2077"
+							title="CYBERPUNK 2077"
+						/>
+					</a>
 				</p>
 			</footer>
 		</div>

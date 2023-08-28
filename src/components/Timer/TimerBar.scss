@@ -1,0 +1,25 @@
+.progress-bar {
+	position: relative;
+	height: 10px;
+	width: 100%;
+	border: 1px solid var(--primary);
+	box-sizing: border-box;
+	&::before {
+		content: "";
+		position: absolute;
+		background-color: var(--primary);
+		height: 100%;
+		top: 0;
+		left: 0;
+		width: 100%;
+		transition: width 0.3s;
+		transition-timing-function: ease-in-out;
+	}
+	&.started {
+		&::before {
+			width: 0%;
+			transition: width var(--progress_percentage);
+			transition-timing-function: linear;
+		}
+	}
+}

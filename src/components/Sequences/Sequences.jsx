@@ -124,7 +124,6 @@ const Sequences = ({ buffer, started, focused, sequences, bufferUpdate, showResu
 				</footer>
 			}
 			dark
-			styles={{ maxWidth: "800px", width: "100%" }}
 		></Container>
 	);
 };

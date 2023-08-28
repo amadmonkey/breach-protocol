@@ -1,11 +1,20 @@
+@import "../../var.scss";
+
 .buffer-container {
 	display: flex;
-	width: 100%;
+	flex-direction: column;
 	padding: 10px 0;
+
+	@include for-tablet-portrait-up() {
+		width: unset;
+		flex-direction: row;
+		.progress-bar {
+			display: none;
+		}
+	}
+
 	.buffer-display {
-		min-width: 190px;
 		max-width: 390px;
-		width: 190px;
 		position: relative;
 		display: inline-flex;
 		align-items: center;
@@ -23,12 +32,17 @@
 			> span {
 				position: relative;
 				display: inline-grid;
-				height: 30px;
-				width: 30px;
-				font-size: 27px;
+				height: 15px;
+				width: 15px;
+				font-size: 14px;
 				align-items: center;
 				justify-items: center;
 				box-sizing: border-box;
+				@include for-tablet-portrait-up() {
+					height: 30px;
+					width: 30px;
+					font-size: 27px;
+				}
 			}
 			&.__focused {
 				border: 2px solid var(--focused);
@@ -55,7 +69,8 @@
 		top: 0;
 		height: 100%;
 	}
-	&:hover {
+	&:hover,
+	&:active {
 		.buffer-display {
 			padding-right: 35px;
 		}

@@ -1,5 +1,6 @@
+@import "../../var.scss";
+
 .board-container {
-	max-width: 620px;
 	width: 100%;
 	display: flex;
 	justify-content: center;
@@ -11,8 +12,8 @@
 	padding: 8px 0;
 	li {
 		position: relative;
-		height: 60px;
-		width: 60px;
+		height: 40px;
+		width: 40px;
 		display: grid;
 		align-items: center;
 		box-sizing: border-box;
@@ -23,7 +24,14 @@
 			padding: 3px 5px;
 			background: none;
 			border: none;
-			font-size: 28px;
+			font-size: 20px;
+		}
+		@include for-tablet-landscape-up() {
+			height: 60px;
+			width: 60px;
+			button {
+				font-size: 28px;
+			}
 		}
 		&.__selected {
 			button {
@@ -137,7 +145,7 @@
 	> * {
 		display: grid;
 		img {
-			height: 60px;
+			height: 2em;
 		}
 		&:first-child {
 			flex-grow: 5;

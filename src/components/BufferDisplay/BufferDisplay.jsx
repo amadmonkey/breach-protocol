@@ -2,8 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { _STATUS_CLASSES } from "../../global.js";
 
 import "./BufferDisplay.scss";
+import TimerBar from "../Timer/TimerBar.jsx";
 
-const BufferDisplay = ({ buffer, focused, sequences, updateBufferLength }) => {
+const BufferDisplay = ({
+	buffer,
+	focused,
+	sequences,
+	updateBufferLength,
+	timeLimit,
+	started,
+	setStarted,
+}) => {
 	const tileRefs = useRef([]);
 	const bufferContainer = useRef();
 	const [matched, setMatched] = useState(false);
@@ -101,7 +110,6 @@ const BufferDisplay = ({ buffer, focused, sequences, updateBufferLength }) => {
 							</li>
 						);
 					}
-
 					if (buffer.maxLength < 8) {
 						tiles.push(
 							<li className="buffer-manage __add" key="add">
@@ -121,6 +129,7 @@ const BufferDisplay = ({ buffer, focused, sequences, updateBufferLength }) => {
 					return tiles;
 				})()}
 			</ul>
+			<TimerBar timeLimit={timeLimit} started={started} setStarted={() => setStarted()} />
 		</div>
 	);
 };

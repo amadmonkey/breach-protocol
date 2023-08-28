@@ -26,6 +26,7 @@ const Board = ({
 
 	const addBuffer = (newTile) => {
 		if (newTile.isValid(buffer, axis)) {
+			updateFocused(newTile);
 			newTile.status = false;
 			buffer.add(newTile);
 			axis.toggle();
@@ -140,12 +141,11 @@ const Board = ({
 							<img src={ft4} alt="" />
 						</span>
 					</div>
-					<button className="btn" onClick={() => reset()}>
-						<span>{boardStatus ? "PLAY AGAIN" : "RESET"}</span>
+					<button className="btn reset" onClick={() => reset()}>
+						<span>{boardStatus ? "PLAY AGAIN" : "REFRESH"}</span>
 					</button>
 				</div>
 			}
-			styles={{ width: "600px" }}
 			customClasses={[boardStatus ? (boardStatus.success ? "success" : "fail") : ""]}
 		></Container>
 	);
